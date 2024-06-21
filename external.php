@@ -200,16 +200,15 @@
         } 
     }
     function printWeekEndingOptions() {
-        $sql = "SELECT DISTINCT USERNAME, FIRSTNAME, LASTNAME FROM USERINFO WHERE USERNAME <> 'admin' AND COMPANYCODE ='" . $_SESSION["COMPCODE"] . "';";
+        $sql = "SELECT DISTINCT DATE(T.TIMECODEEND + INTERVAL (6 - WEEKDAY(T.TIMECODEEND)) DAY) AS _WEEKEND FROM TIMECODESLOGGING T WHERE USERNAME <> 'admin' AND COMPANYCODE ='" . $_SESSION["COMPCODE"] . "';";
 
         $result = getDatabaseConnection()->query($sql);
 
         // loop through results and build options
         if($result->num_rows > 0) {
-            
+            echo "<option>ALL</option>";
             while($row = $result->fetch_assoc()){
-                echo "<option>2024-02-11</option>";
-                echo "<option>2024-02-04</option>";
+                echo "<option>". $row["_WEEKEND"] . "</option>";
             }
         } 
     }
