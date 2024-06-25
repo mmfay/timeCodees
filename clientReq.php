@@ -130,10 +130,12 @@
                             $timeRange = $data['timeRange'];
                             buildDataReview($timeRange);
                             break;
-                        default:
+                        case "reporting":
                             $userRange = $data['userRange'];
                             $timeRange = $data['timeRange'];
                             buildReportTable($timeRange, $userRange);
+                            break;   
+                        default:
                             break;
 
                     }
