@@ -27,73 +27,38 @@
         <h1>Data Entry Review</h1>
     </div>
     <div class="reporting-container">
-        <form class="form" id="reportingSubmit">
+        <form class="form" id="dataRequest">
             <select id="weekEnding" name="weekEnding">
                 <?php 
                     printWeekEndingOptions();
                 ?>
             </select>
-            <button type="submit">Get Data</button>
+            <button type="submit" class="test1">Get Data</button>
         </form>
     </div>
-    
+    <div class="table-container">
+        <table class="timecodes" id="dataTable">
+        </table>
+    </div>
     <script>
-        function updateActive(test) {
-            var active = "";
-            if (document.getElementById(test).checked) {
-                active = "1";
-            } else {
-                active = "0";
-            }
-            var postData = {
-            title: "Update",
-            name: test,
-            isActive: active
-            };
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "clientReq.php", true);
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhr.send(JSON.stringify(postData));
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 201) {
-            
-                } else {
-            
-                }
-            };
-        }
-        function deleteRecord(test) {
-            var postData = {
-            title: "Delete",
-            name: test,
-            };
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "clientReq.php", true);
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhr.send(JSON.stringify(postData));
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == XMLHttpRequest.DONE) {
-                    document.getElementById("phpTest").innerHTML = xhr.responseText;
-                }
-            };
-        }
-        submissionForm.addEventListener("submit", (e) => {
+        dataRequest.addEventListener("submit", (e) => {
             e.preventDefault();
-
+   
+            
             var postData = {
-                title: "Insert",
-                name: "timeCode",
-                code: document.getElementById("newTC").value,
-                desc: document.getElementById("newDesc").value,
+                title: "Select",
+                name: "dataReview",
+                timeRange: document.getElementById("weekEnding").value
             }
             var xhr = new XMLHttpRequest();
-
             xhr.open("POST", "clientReq.php", true);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.send(JSON.stringify(postData));
             xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
-                document.getElementById("phpTest").innerHTML = xhr.responseText;
+                document.getElementById("dataTable").innerHTML = xhr.responseText;
+            } else {
+                document.getElementById("dataTable").innerHTML = "<h1>ERROR</h1>";
             }
         }
         });
