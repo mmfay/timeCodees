@@ -39,8 +39,17 @@
         }
     
         // sql string
-        $sql = "SELECT USERNAME, PASSWORD FROM USERINFO WHERE USERNAME = ? AND COMPANYCODE = ?";
-        $sqlSecurity = "SELECT SECURITYACCESS FROM USERSECURITY WHERE USERNAME = ? AND COMPANYCODE = ?";
+        $sql = "SELECT 
+                    USERNAME
+                    ,PASSWORD 
+                FROM USERINFO 
+                WHERE 
+                    1=1 
+                    AND USERNAME = ? 
+                    AND COMPANYCODE = ?";
+        $sqlSecurity = "SELECT 
+                            SECURITYACCESS 
+                        FROM USERSECURITY WHERE USERNAME = ? AND COMPANYCODE = ?";
         // prepare/execute statement while binding parameters
         $stmt = $conn->prepare($sql); 
         $stmt->bind_param("ss", $un, $cc);
@@ -147,6 +156,33 @@
         }
 
     }
+    function modifyCodes() {
+
+        // create select string
+        $sql = "SELECT 
+                    TIMECODE
+                    ,TIMECODESTART
+                    ,TIMECODEEND
+                    ,TIMESTAMPDIFF(HOUR, TIMECODESTART, TIMECODEEND) AS DURATION 
+                FROM TIMECODESLOGGING 
+                WHERE USERNAME = '" . $_SESSION["USERID"] . "' AND COMPANYCODE = '" . $_SESSION["COMPCODE"] . "' ORDER BY TIMECODESTART DESC;";
+
+        // prepare/execute statement
+        $result = getDatabaseConnection()->query($sql); 
+
+        if($result->num_rows > 0) {
+            echo "<tr>
+            <th>Time Code</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Duration (Hrs)</th>
+            </tr>";
+            while($row = $result->fetch_assoc()){
+                echo "<tr><td contenteditable='true'>" . $row["TIMECODE"] . "</td><td contenteditable='true'>" . $row["TIMECODESTART"] . "</td><td contenteditable='true'>" . $row["TIMECODEEND"] . "</td><td contenteditable='true'>" . $row["DURATION"] . "</td>";
+            }
+        }
+
+    }
     function userList() {
         $conn = getDatabaseConnection();
         // create select string
@@ -200,7 +236,13 @@
         } 
     }
     function printWeekEndingOptions() {
-        $sql = "SELECT DISTINCT DATE(T.TIMECODEEND + INTERVAL (6 - WEEKDAY(T.TIMECODEEND)) DAY) AS _WEEKEND FROM TIMECODESLOGGING T WHERE USERNAME <> 'admin' AND COMPANYCODE ='" . $_SESSION["COMPCODE"] . "';";
+        $sql = "SELECT DISTINCT 
+                    DATE(T.TIMECODEEND + INTERVAL (6 - WEEKDAY(T.TIMECODEEND)) DAY) AS _WEEKEND 
+                FROM TIMECODESLOGGING T 
+                    WHERE 
+                        1=1
+                        AND USERNAME <> 'admin' 
+                        AND COMPANYCODE ='" . $_SESSION["COMPCODE"] . "';";
 
         $result = getDatabaseConnection()->query($sql);
 
@@ -357,6 +399,81 @@
                 echo "<option id='" . $row["LISTFIELD"] . "'>" . $row["LISTFIELD"] . "</option>";
             }
         }
+    }
+    // data review
+    function buildDataReview($timeRange) {
+        $host = 'localhost:3306';
+        $dbname = 'TIMECODES';
+        $username = 'root';
+        $password = 'vaXjev98';
+
+        // PDO connection string
+        $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
+
+        // Attempt to connect
+        try {
+            // Create a new PDO instance
+            $pdo = new PDO($dsn, $username, $password);
+
+            // Set PDO to throw exceptions on errors
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            if ($timeRange == "ALL") {
+                $stmt = $pdo->prepare(" SELECT 
+                                            USERNAME
+                                            ,TIMECODE
+                                            ,DATE(TIMECODESTART)    AS _START_DATE
+                                            ,TIME(TIMECODESTART)    AS _START_TIME
+                                            ,DATE(TIMECODEEND)      AS _END_DATE
+                                            ,TIME(TIMECODEEND)      AS _END_TIME 
+                                            ,DATE(TIMECODEEND + INTERVAL (6 - WEEKDAY(TIMECODEEND)) DAY)  AS _WEEKENDING
+                                        FROM TIMECODESLOGGING");
+            } else {
+                $stmt = $pdo->prepare("SELECT 
+                                            USERNAME
+                                            ,TIMECODE
+                                            ,DATE(TIMECODESTART)    AS _START_DATE
+                                            ,TIME(TIMECODESTART)    AS _START_TIME
+                                            ,DATE(TIMECODEEND)      AS _END_DATE
+                                            ,TIME(TIMECODEEND)      AS _END_TIME 
+                                            ,DATE(TIMECODEEND + INTERVAL (6 - WEEKDAY(TIMECODEEND)) DAY)  AS _WEEKENDING
+                                        FROM TIMECODESLOGGING 
+                                        WHERE 
+                                            1=1
+                                            AND (DATE(TIMECODEEND + INTERVAL (6 - WEEKDAY(TIMECODEEND)) DAY) = :value1)");
+                $stmt->bindParam(':value1', $timeRange, PDO::PARAM_STR);
+            }
+            $stmt->execute();
+            echo "<tr>
+                        <th>User</th>
+                        <th>TimeCode</th>
+                        <th>Start Date</th>
+                        <th>Start Time</th>
+                        <th>End Date</th>
+                        <th>End Time</th>
+                        <th>Week Ending</th>
+                    </tr>";
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                echo "<tr>
+                        <td>{$row['USERNAME']}</td>
+                        <td>{$row['TIMECODE']}</td>
+                        <td>{$row['_START_DATE']}</td>
+                        <td>{$row['_START_TIME']}</td>
+                        <td>{$row['_END_DATE']}</td>
+                        <td>{$row['_END_TIME']}</td>
+                        <td>{$row['_WEEKENDING']}</td>
+                        </tr>";
+            }
+            $stmt->closeCursor();
+            // Additional PDO configurations if needed
+            // $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+            //echo "Connected successfully";
+        } catch (PDOException $e) {
+            // Handle connection errors
+            die("Connection failed: " . $e->getMessage());
+        }
+  
+ 
     }
 
 ?>
