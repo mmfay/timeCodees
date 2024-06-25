@@ -124,10 +124,19 @@
                     deleteTimeCode($name);
                     break;
                 case "Select":
-                    $userRange = $data['userRange'];
-                    $timeRange = $data['timeRange'];
-                    buildReportTable($timeRange, $userRange);
-                    break;
+                    $name = $data['name'];
+                    switch($name) {
+                        case "dataReview":
+                            $timeRange = $data['timeRange'];
+                            buildDataReview($timeRange);
+                            break;
+                        default:
+                            $userRange = $data['userRange'];
+                            $timeRange = $data['timeRange'];
+                            buildReportTable($timeRange, $userRange);
+                            break;
+
+                    }
                 case "Logout":
                     logout();
                     break;
