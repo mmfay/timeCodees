@@ -286,9 +286,13 @@
                     ,MONTHNAME(TIMECODESTART) AS _MONTH
                     ,SUM(TIMESTAMPDIFF(HOUR, TIMECODESTART, TIMECODEEND)) AS _DURATION 
                 FROM TIMECODESLOGGING 
-                WHERE COMPCODE = '" . $_SESSION["COMPCODE"] . "'" . 
-                "GROUP BY USERNAME, TIMECODE, YEAR(TIMECODESTART), MONTHNAME(TIMECODESTART) 
-                ORDER BY MONTHNAME(TIMECODESTART), YEAR(TIMECODESTART) DESC;";
+                WHERE 
+                    1=1
+                    AND COMPANYCODE = '" . $_SESSION["COMPCODE"] . "' 
+                GROUP BY 
+                    USERNAME, TIMECODE, YEAR(TIMECODESTART), MONTHNAME(TIMECODESTART) 
+                ORDER BY 
+                    MONTHNAME(TIMECODESTART), YEAR(TIMECODESTART) DESC;";
         $result = getDatabaseConnection()->query($sql);
 
         // loop through results and build options
@@ -316,9 +320,12 @@
                 FROM TIMECODESLOGGING 
                 WHERE 
                     1=1
-                    AND USERNAME = '" . $user . "' AND COMPANYCODE '=" . $_SESSION["COMPCODE"] . "'" . 
-                "GROUP BY USERNAME, TIMECODE, YEAR(TIMECODESTART), MONTHNAME(TIMECODESTART) 
-                ORDER BY MONTHNAME(TIMECODESTART), YEAR(TIMECODESTART) DESC;";
+                    AND USERNAME = '" . $user . "' 
+                    AND COMPANYCODE '=" . $_SESSION["COMPCODE"] . "' 
+                GROUP BY 
+                    USERNAME, TIMECODE, YEAR(TIMECODESTART), MONTHNAME(TIMECODESTART) 
+                ORDER BY 
+                    MONTHNAME(TIMECODESTART), YEAR(TIMECODESTART) DESC;";
         $result = getDatabaseConnection()->query($sql);
 
         // loop through results and build options
@@ -345,8 +352,12 @@
                 FROM TIMECODESLOGGING 
                 WHERE 
                     1=1
-                    AND YEAR(TIMECODESTART) = " . $time . " AND COMPANYCODE '=" . $_SESSION["COMPCODE"] . "'" . " GROUP BY USERNAME, TIMECODE, YEAR(TIMECODESTART), MONTHNAME(TIMECODESTART) 
-                ORDER BY MONTHNAME(TIMECODESTART), YEAR(TIMECODESTART) DESC;";
+                    AND YEAR(TIMECODESTART) = " . $time . " 
+                    AND COMPANYCODE '=" . $_SESSION["COMPCODE"] . "' 
+                GROUP BY 
+                    USERNAME, TIMECODE, YEAR(TIMECODESTART), MONTHNAME(TIMECODESTART) 
+                ORDER BY 
+                    MONTHNAME(TIMECODESTART), YEAR(TIMECODESTART) DESC;";
         $result = getDatabaseConnection()->query($sql);
 
         // loop through results and build options
@@ -373,8 +384,13 @@
                 FROM TIMECODESLOGGING 
                 WHERE 
                     1=1
-                    AND YEAR(TIMECODESTART) = " . $time . " AND USERNAME = '" . $user . " AND COMPANYCODE '=" . $_SESSION["COMPCODE"] . "' GROUP BY USERNAME, TIMECODE, YEAR(TIMECODESTART), MONTHNAME(TIMECODESTART) 
-                ORDER BY MONTHNAME(TIMECODESTART), YEAR(TIMECODESTART) DESC;";
+                    AND YEAR(TIMECODESTART) = " . $time . " 
+                    AND USERNAME = '" . $user . "' 
+                    AND COMPANYCODE '=" . $_SESSION["COMPCODE"] . "' 
+                GROUP BY 
+                    USERNAME, TIMECODE, YEAR(TIMECODESTART), MONTHNAME(TIMECODESTART) 
+                ORDER BY 
+                    MONTHNAME(TIMECODESTART), YEAR(TIMECODESTART) DESC;";
         $result = getDatabaseConnection()->query($sql);
 
         // loop through results and build options
