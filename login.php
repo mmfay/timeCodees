@@ -1,34 +1,26 @@
 <?php
-    include 'external.php';
-    // server should keep session data for AT LEAST 1 hour
-    ini_set('session.cookie_lifetime', 60 * 60 * 24 * 365);
-    ini_set('session.gc-maxlifetime', 60 * 60 * 24 * 365);
-    session_start();
-    authentication(FALSE);
+    if($_SERVER["REQUEST_METHOD"] == "POST") {
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        $companycode = $_POST['companycode'];
+
+        // Your authentication logic goes here (e.g., checking against a database)
+        // For demonstration, let's assume the correct username and password are "admin"
+        $correct_username = 'admin';
+        $correct_password = 'password';
+        $correct_companycode = 'GCIA';
+
+        // Check if username and password are correct
+        if ($username === $correct_username && $password === $correct_password && $companycode === $correct_companycode) {
+            // Authentication successful
+            session_start();
+            $_SESSION['username'] = $username; // Store username in session variable
+            $_SESSION['companycode'] = $companycode;
+            header("Location: home.php"); // Redirect to welcome page
+            exit();
+        } else {
+            // Authentication failed
+            echo "<script>alert('Invalid username or password');</script>"; 
+        }
+    }
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <title>timecodes</title>    
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="../stylesheets/timecodes.css">
-</head>
-<body>
-<h1 class="titleheader"> timecodes </h1>
-    <div class="login">
-    <form action="/home.php" method="post">
-        <label>User Name
-        <input type="text" name="user" id="userNameField">
-        </label>
-        <label>Company Code
-        <input type="text" name="compCode" id="compCodeField">
-        </label>
-        <label>Password
-        <input type="password" name="password" id="passwordField">
-        </label>
-        <input type="submit" value="Login">
-    </form>
-    </div>
-    <script>
-    </script>
-</body>
