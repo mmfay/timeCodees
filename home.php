@@ -1,7 +1,6 @@
 <?php
     include 'external.php';
-    session_start();
-    authentication(TRUE);
+    require_once 'session_check.php';
 ?>
 <!DOCTYPE html>
 <html>

@@ -1,7 +1,6 @@
 <?php
     include 'external.php';
-    session_start();
-    authentication(TRUE);
+    require_once 'session_check.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -21,7 +20,7 @@
         <?php
             adminList();
         ?>
-        <li><a onclick='logout()' href="login.php">Logout</a></li>
+        <li><a onclick='logout()' href="logout.php">Logout</a></li>
     </ul>
     <div class="headers">
         <h1>Run Reports</h1>
@@ -43,7 +42,7 @@
         </form>
     </div>
     <div class="table-container">
-        <table class="timecodes" id="phpTest">
+        <table class="timecodes" id="reportingTable">
         </table>
     </div>
     <script>
@@ -81,22 +80,21 @@
                 userRange: users.options[users.selectedIndex].id
             }
             var xhr = new XMLHttpRequest();
-
             xhr.open("POST", "clientReq.php", true);
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.send(JSON.stringify(postData));
             xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
-                document.getElementById("phpTest").innerHTML = xhr.responseText;
+                document.getElementById("reportingTable").innerHTML = xhr.responseText;
             } else {
-                document.getElementById("phpTest").innerHTML = "<h1>ERROR</h1>";
+                document.getElementById("reportingTable").innerHTML = "<h1>ERROR</h1>";
             }
         }
         });
         function exportToExcel() {
             var downloadLink;
             var dataType = 'application/vnd.ms-excel';
-            var tableSelect = document.getElementById("phpTest");
+            var tableSelect = document.getElementById("reportingTable");
             var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
             
             // Specify file name

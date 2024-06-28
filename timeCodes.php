@@ -1,7 +1,6 @@
 <?php
     include 'external.php';
-    session_start();
-    authentication(TRUE);
+    require_once 'session_check.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -21,7 +20,7 @@
         <?php
             adminList();
         ?>
-        <li><a onclick='logout()' href="login.php">Logout</a></li>
+        <li><a onclick='logout()' href="logout.php">Logout</a></li>
     </ul>
     <div class="headers">
         <h1>Create Time Codes</h1>
